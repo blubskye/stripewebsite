@@ -1,39 +1,27 @@
 <?php
 namespace App\Entity;
 
+use App\Repository\MerchantRepository;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 use Exception;
 
-/**
- * @ORM\Table(name="merchant")
- * @ORM\Entity(repositoryClass="App\Repository\MerchantRepository")
- */
+#[ORM\Entity(repositoryClass: MerchantRepository::class)]
+#[ORM\Table(name: 'merchant')]
 class Merchant
 {
-    /**
-     * @var int
-     * @ORM\Id
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
+
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
+    protected ?string $password = null;
+
+    #[ORM\Column(type: 'datetime')]
+    protected DateTime $dateCreated;
 
     /**
-     * @var string
-     * @ORM\Column(type="string", length=64, nullable=true)
-     */
-    protected $password;
-
-    /**
-     * @var DateTime
-     * @ORM\Column(type="datetime")
-     */
-    protected $dateCreated;
-
-    /**
-     * Constructor
-     *
      * @throws Exception
      */
     public function __construct()
@@ -41,48 +29,29 @@ class Merchant
         $this->dateCreated = new DateTime();
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-     * @param string $password
-     *
-     * @return Merchant
-     */
-    public function setPassword(string $password): Merchant
+    public function setPassword(string $password): self
     {
         $this->password = $password;
 
         return $this;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getDateCreated(): DateTime
     {
         return $this->dateCreated;
     }
 
-    /**
-     * @param DateTime $dateCreated
-     *
-     * @return Merchant
-     */
-    public function setDateCreated(DateTime $dateCreated): Merchant
+    public function setDateCreated(DateTime $dateCreated): self
     {
         $this->dateCreated = $dateCreated;
 

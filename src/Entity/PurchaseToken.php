@@ -1,119 +1,67 @@
 <?php
 namespace App\Entity;
 
+use App\Repository\PurchaseTokenRepository;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 use Exception;
 
-/**
- * @ORM\Table(name="purchase_token", indexes={
- *      @ORM\Index(columns={"token"})
- * })
- * @ORM\Entity(repositoryClass="App\Repository\PurchaseTokenRepository")
- */
+#[ORM\Entity(repositoryClass: PurchaseTokenRepository::class)]
+#[ORM\Table(name: 'purchase_token')]
+#[ORM\Index(columns: ['token'], name: 'idx_token')]
 class PurchaseToken
 {
-    /**
-     * @var int
-     * @ORM\Id
-     * @ORM\Column(type="bigint", options={"unsigned"=true})
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\Column(type: 'bigint', options: ['unsigned' => true])]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    protected ?int $id = null;
+
+    #[ORM\Column(type: 'string', length: 32)]
+    protected string $token;
+
+    #[ORM\Column(type: 'string', length: 32)]
+    protected string $transactionID;
+
+    #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
+    protected int $price;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    protected ?string $description = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    protected ?bool $isSuccess = null;
+
+    #[ORM\Column(type: 'boolean')]
+    protected bool $isClientFailure;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    protected string $successURL;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    protected string $cancelURL;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    protected string $failureURL;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    protected string $webhookURL;
+
+    #[ORM\Column(type: 'boolean')]
+    protected bool $isPurchased;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    protected ?string $stripeID = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    protected ?string $stripePaymentIntent = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    protected ?string $stripeCustomer = null;
+
+    #[ORM\Column(type: 'datetime')]
+    protected DateTime $dateCreated;
 
     /**
-     * @var string
-     * @ORM\Column(type="string", length=32)
-     */
-    protected $token;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=32)
-     */
-    protected $transactionID;
-
-    /**
-     * @var int
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     */
-    protected $price;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    protected $description;
-
-    /**
-     * @var bool
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    protected $isSuccess;
-
-    /**
-     * @var bool
-     * @ORM\Column(type="boolean")
-     */
-    protected $isClientFailure;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    protected $successURL;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    protected $cancelURL;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    protected $failureURL;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255)
-     */
-    protected $webhookURL;
-
-    /**
-     * @var bool
-     * @ORM\Column(type="boolean")
-     */
-    protected $isPurchased;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    protected $stripeID;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    protected $stripePaymentIntent;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    protected $stripCustomer;
-
-    /**
-     * @var DateTime
-     * @ORM\Column(type="datetime")
-     */
-    protected $dateCreated;
-
-    /**
-     * Constructor
-     *
      * @throws Exception
      */
     public function __construct()
@@ -124,308 +72,185 @@ class PurchaseToken
         $this->token           = bin2hex(random_bytes(16));
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getToken(): string
     {
         return $this->token;
     }
 
-    /**
-     * @param string $token
-     *
-     * @return PurchaseToken
-     */
-    public function setToken(string $token): PurchaseToken
+    public function setToken(string $token): self
     {
         $this->token = $token;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getTransactionID(): string
     {
         return $this->transactionID;
     }
 
-    /**
-     * @param string $transactionID
-     *
-     * @return PurchaseToken
-     */
-    public function setTransactionID(string $transactionID): PurchaseToken
+    public function setTransactionID(string $transactionID): self
     {
         $this->transactionID = $transactionID;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPrice(): int
     {
         return $this->price;
     }
 
-    /**
-     * @param int $price
-     *
-     * @return PurchaseToken
-     */
-    public function setPrice(int $price): PurchaseToken
+    public function setPrice(int $price): self
     {
         $this->price = $price;
 
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     *
-     * @return PurchaseToken
-     */
-    public function setDescription(string $description): PurchaseToken
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
     public function isSuccess(): ?bool
     {
         return $this->isSuccess;
     }
 
-    /**
-     * @param bool $isSuccess
-     *
-     * @return PurchaseToken
-     */
-    public function setIsSuccess(bool $isSuccess): PurchaseToken
+    public function setIsSuccess(bool $isSuccess): self
     {
         $this->isSuccess = $isSuccess;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isClientFailure(): bool
     {
         return $this->isClientFailure;
     }
 
-    /**
-     * @param bool $isClientFailure
-     *
-     * @return PurchaseToken
-     */
-    public function setIsClientFailure(bool $isClientFailure): PurchaseToken
+    public function setIsClientFailure(bool $isClientFailure): self
     {
         $this->isClientFailure = $isClientFailure;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getSuccessURL(): string
     {
         return $this->successURL;
     }
 
-    /**
-     * @param string $successURL
-     *
-     * @return PurchaseToken
-     */
-    public function setSuccessURL(string $successURL): PurchaseToken
+    public function setSuccessURL(string $successURL): self
     {
         $this->successURL = $successURL;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getCancelURL(): string
     {
         return $this->cancelURL;
     }
 
-    /**
-     * @param string $cancelURL
-     *
-     * @return PurchaseToken
-     */
-    public function setCancelURL(string $cancelURL): PurchaseToken
+    public function setCancelURL(string $cancelURL): self
     {
         $this->cancelURL = $cancelURL;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFailureURL(): string
     {
         return $this->failureURL;
     }
 
-    /**
-     * @param string $failureURL
-     *
-     * @return PurchaseToken
-     */
-    public function setFailureURL(string $failureURL): PurchaseToken
+    public function setFailureURL(string $failureURL): self
     {
         $this->failureURL = $failureURL;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getWebhookURL(): string
     {
         return $this->webhookURL;
     }
 
-    /**
-     * @param string $webhookURL
-     *
-     * @return PurchaseToken
-     */
-    public function setWebhookURL(string $webhookURL): PurchaseToken
+    public function setWebhookURL(string $webhookURL): self
     {
         $this->webhookURL = $webhookURL;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isPurchased(): bool
     {
         return $this->isPurchased;
     }
 
-    /**
-     * @param bool $isPurchased
-     *
-     * @return PurchaseToken
-     */
-    public function setIsPurchased(bool $isPurchased): PurchaseToken
+    public function setIsPurchased(bool $isPurchased): self
     {
         $this->isPurchased = $isPurchased;
 
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getStripeID(): ?string
     {
         return $this->stripeID;
     }
 
-    /**
-     * @param string $stripeID
-     *
-     * @return PurchaseToken
-     */
-    public function setStripeID(string $stripeID): PurchaseToken
+    public function setStripeID(string $stripeID): self
     {
         $this->stripeID = $stripeID;
 
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getStripePaymentIntent(): ?string
     {
         return $this->stripePaymentIntent;
     }
 
-    /**
-     * @param string $stripePaymentIntent
-     *
-     * @return PurchaseToken
-     */
-    public function setStripePaymentIntent(string $stripePaymentIntent): PurchaseToken
+    public function setStripePaymentIntent(string $stripePaymentIntent): self
     {
         $this->stripePaymentIntent = $stripePaymentIntent;
 
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getStripeCustomer(): ?string
     {
-        return $this->stripCustomer;
+        return $this->stripeCustomer;
     }
 
-    /**
-     * @param string $stripeCustomer
-     *
-     * @return PurchaseToken
-     */
-    public function setStripeCustomer(string $stripeCustomer): PurchaseToken
+    public function setStripeCustomer(string $stripeCustomer): self
     {
-        $this->stripCustomer = $stripeCustomer;
+        $this->stripeCustomer = $stripeCustomer;
 
         return $this;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getDateCreated(): DateTime
     {
         return $this->dateCreated;
     }
 
-    /**
-     * @param DateTime $dateCreated
-     *
-     * @return PurchaseToken
-     */
-    public function setDateCreated(DateTime $dateCreated): PurchaseToken
+    public function setDateCreated(DateTime $dateCreated): self
     {
         $this->dateCreated = $dateCreated;
 

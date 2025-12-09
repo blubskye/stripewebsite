@@ -5,21 +5,14 @@ use App\Entity\PurchaseToken;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\Exception\GuzzleException;
 
-/**
- * Class WebhookService
- */
 class WebhookService
 {
-    const TIMEOUT = 5.0;
+    private const TIMEOUT = 5.0;
 
     /**
-     * @param PurchaseToken $purchaseToken
-     * @param bool          $success
-     *
-     * @return string
      * @throws GuzzleException
      */
-    public function send(PurchaseToken $purchaseToken, $success)
+    public function send(PurchaseToken $purchaseToken, bool $success): string
     {
         $body = [
             'success'       => $success,
@@ -29,8 +22,8 @@ class WebhookService
             'transactionID' => $purchaseToken->getTransactionID()
         ];
         $headers = [
-            'Accept'          => 'application/json',
-            'Content-Type'    => 'application/json'
+            'Accept'       => 'application/json',
+            'Content-Type' => 'application/json'
         ];
         $options = [
             'headers' => $headers,

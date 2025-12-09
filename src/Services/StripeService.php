@@ -1,34 +1,17 @@
 <?php
 namespace App\Services;
 
-use Stripe\ApiResource;
 use Stripe\Checkout\Session;
-use Stripe\Error\Api;
 use Stripe\Event;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 
-/**
- * Class StripeService
- */
 class StripeService
 {
-    /**
-     * @var string
-     */
-    protected $apiKey;
+    protected string $apiKey;
+    protected string $secretKey;
 
-    /**
-     * @var string
-     */
-    protected $secretKey;
-
-    /**
-     * Constructor
-     *
-     * @param string $apiKey
-     * @param string $secretKey
-     */
-    public function __construct($apiKey, $secretKey)
+    public function __construct(string $apiKey, string $secretKey)
     {
         $this->apiKey    = $apiKey;
         $this->secretKey = $secretKey;
@@ -36,32 +19,36 @@ class StripeService
     }
 
     /**
-     * @param array $item
-     * @param string $token
-     * @param string $successURL
-     * @param string $cancelURL
-     *
-     * @return ApiResource
+     * @throws ApiErrorException
      */
-    public function createSession(array $item, $token, $successURL, $cancelURL)
+    public function createSession(array $item, string $token, string $successURL, string $cancelURL): Session
     {
         return Session::create([
             'payment_method_types' => ['card'],
             'client_reference_id'  => $token,
-            'line_items' => [$item],
+            'line_items' => [
+                [
+                    'price_data' => [
+                        'currency' => $item['currency'] ?? 'usd',
+                        'product_data' => [
+                            'name' => $item['name'] ?? 'Purchase',
+                            'description' => $item['description'] ?? null,
+                        ],
+                        'unit_amount' => $item['amount'],
+                    ],
+                    'quantity' => $item['quantity'] ?? 1,
+                ],
+            ],
+            'mode' => 'payment',
             'success_url' => $successURL,
             'cancel_url'  => $cancelURL
         ]);
     }
 
     /**
-     * @param string $token
-     * @param int    $gte
-     *
-     * @return Session|null
-     * @throws Api
+     * @throws ApiErrorException
      */
-    public function findByToken($token, $gte = null)
+    public function findByToken(string $token, ?int $gte = null): ?Session
     {
         $events = Event::all([
             'type' => 'checkout.session.completed',
@@ -72,7 +59,7 @@ class StripeService
 
         $session = null;
         foreach ($events->autoPagingIterator() as $event) {
-            if ($event->data->object['client_reference_id'] === $token) {
+            if ($event->data->object->client_reference_id === $token) {
                 $session = $event->data->object;
                 break;
             }

@@ -1,7 +1,9 @@
 twig:
-    default_path: '%kernel.project_dir%/templates'
-    debug: '%kernel.debug%'
-    strict_variables: '%kernel.debug%'
-    form_themes: ['_forms/bootstrap_4_layout.html.twig']
+    file_name_pattern: '*.twig'
     globals:
         siteName: yunogasai.site
+    form_themes: ['bootstrap_5_layout.html.twig']
+
+when@test:
+    twig:
+        strict_variables: true

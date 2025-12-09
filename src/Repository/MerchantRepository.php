@@ -3,29 +3,16 @@ namespace App\Repository;
 
 use App\Entity\Merchant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * Class MerchantRepository
- */
 class MerchantRepository extends ServiceEntityRepository
 {
-    /**
-     * Constructor
-     *
-     * @param RegistryInterface $registry
-     */
-    public function __construct(RegistryInterface $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Merchant::class);
     }
 
-    /**
-     * @param $id
-     *
-     * @return object|Merchant
-     */
-    public function findByID($id)
+    public function findByID(int|string $id): ?Merchant
     {
         return $this->findOneBy(['id' => $id]);
     }

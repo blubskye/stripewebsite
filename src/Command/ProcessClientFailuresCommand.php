@@ -5,68 +5,35 @@ use App\Entity\PurchaseToken;
 use App\Services\WebhookService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class ProcessClientFailuresCommand
- */
+#[AsCommand(
+    name: 'app:payments:process-client-failures',
+    description: 'Process and retry failed webhook notifications'
+)]
 class ProcessClientFailuresCommand extends Command
 {
-    /**
-     * @var string
-     */
-    protected static $defaultName = 'app:payments:process-client-failures';
-
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
-
-    /**
-     * @var WebhookService
-     */
-    protected $webhookService;
-
-    /**
-     * Constructor
-     *
-     * @param EntityManagerInterface $em
-     * @param WebhookService         $webhookService
-     */
-    public function __construct(EntityManagerInterface $em, WebhookService $webhookService)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly WebhookService $webhookService
+    ) {
         parent::__construct();
-
-        $this->em             = $em;
-        $this->webhookService = $webhookService;
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|void|null
-     * @throws Exception
-     * @throws GuzzleException
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $paymentTokens = $this->em->getRepository(PurchaseToken::class)->findByClientFailure();
-        foreach($paymentTokens as $purchaseToken) {
+        foreach ($paymentTokens as $purchaseToken) {
             $this->process($purchaseToken, $output);
         }
+
+        return Command::SUCCESS;
     }
 
-    /**
-     * @param PurchaseToken   $purchaseToken
-     * @param OutputInterface $output
-     *
-     * @throws GuzzleException
-     */
-    protected function process(PurchaseToken $purchaseToken, OutputInterface $output)
+    protected function process(PurchaseToken $purchaseToken, OutputInterface $output): void
     {
         $output->writeln('Processing ' . $purchaseToken->getToken());
 

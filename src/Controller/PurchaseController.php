@@ -2,32 +2,20 @@
 namespace App\Controller;
 
 use App\Entity\PurchaseToken;
-use App\Http\Request;
 use App\Services\StripeService;
 use App\Services\WebhookService;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-/**
- * Class PurchaseController
- */
 class PurchaseController extends Controller
 {
-    /**
-     * @Route("/purchase/checkout/stripe/{token}", name="purchase_checkout_stripe")
-     *
-     * @param string        $token
-     * @param Request       $request
-     * @param StripeService $stripeService
-     *
-     * @return Response
-     * @throws Exception
-     */
-    public function checkoutAction($token, Request $request, StripeService $stripeService)
+    #[Route('/purchase/checkout/stripe/{token}', name: 'purchase_checkout_stripe')]
+    public function checkoutAction(string $token, Request $request, StripeService $stripeService): Response
     {
         $request->getSession()->set('token', $token);
         $purchaseToken = $this->getPurchaseTokenOrThrow($token);
@@ -46,22 +34,16 @@ class PurchaseController extends Controller
 
         return $this->render('purchase/checkout.html.twig', [
             'stripeAPIKey'    => $this->getParameter('stripeApiKey'),
-            'stripeSessionID' => $session['id']
+            'stripeSessionID' => $session->id
         ]);
     }
 
     /**
-     * @Route("/purchase/complete", name="purchase_complete")
-     *
-     * @param Request        $request
-     * @param WebhookService $webhookService
-     * @param StripeService  $stripeService
-     *
-     * @return RedirectResponse
      * @throws Exception
      * @throws GuzzleException
      */
-    public function completeAction(Request $request, WebhookService $webhookService, StripeService $stripeService)
+    #[Route('/purchase/complete', name: 'purchase_complete')]
+    public function completeAction(Request $request, WebhookService $webhookService, StripeService $stripeService): Response
     {
         $session = $request->getSession();
         $token   = $session->get('token');
@@ -76,8 +58,8 @@ class PurchaseController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $session = $stripeService->findByToken($token);
-        if (!$session) {
+        $stripeSession = $stripeService->findByToken($token);
+        if (!$stripeSession) {
             $this->logger->error('Stripe session not found in complete action.');
             throw $this->createNotFoundException();
         }
@@ -85,15 +67,14 @@ class PurchaseController extends Controller
         $purchaseToken
             ->setIsSuccess(true)
             ->setIsPurchased(true)
-            ->setStripeID($session['id'])
-            ->setStripCustomer($session['customer'])
-            ->setStripePaymentIntent($session['payment_intent']);
+            ->setStripeID($stripeSession->id)
+            ->setStripeCustomer($stripeSession->customer)
+            ->setStripePaymentIntent($stripeSession->payment_intent);
         $this->em->flush();
 
         try {
             $webhookService->send($purchaseToken, true);
         } catch (Exception $e) {
-            // A cron job will keep trying this transaction.
             $purchaseToken->setIsClientFailure(true);
             $this->em->flush();
 
@@ -110,15 +91,8 @@ class PurchaseController extends Controller
         return new RedirectResponse($url);
     }
 
-    /**
-     * @Route("/purchase/cancel", name="purchase_cancel")
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     * @throws Exception
-     */
-    public function cancelAction(Request $request)
+    #[Route('/purchase/cancel', name: 'purchase_cancel')]
+    public function cancelAction(Request $request): RedirectResponse
     {
         $session = $request->getSession();
         $token   = $session->get('token');
@@ -136,15 +110,8 @@ class PurchaseController extends Controller
         return new RedirectResponse($purchaseToken->getCancelURL());
     }
 
-    /**
-     * @Route("/purchase/{token}", name="purchase", methods={"GET"})
-     *
-     * @param string $token
-     *
-     * @return Response
-     * @throws Exception
-     */
-    public function indexAction($token)
+    #[Route('/purchase/{token}', name: 'purchase', methods: ['GET'])]
+    public function indexAction(string $token): Response
     {
         $purchaseToken = $this->getPurchaseTokenOrThrow($token);
 
@@ -154,13 +121,7 @@ class PurchaseController extends Controller
         ]);
     }
 
-    /**
-     * @param string $token
-     *
-     * @return PurchaseToken|object
-     * @throws Exception
-     */
-    private function getPurchaseTokenOrThrow($token)
+    private function getPurchaseTokenOrThrow(string $token): PurchaseToken
     {
         $purchaseToken = $this->em->getRepository(PurchaseToken::class)->findByToken($token);
         if (!$purchaseToken || $purchaseToken->isPurchased()) {

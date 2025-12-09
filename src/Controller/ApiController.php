@@ -3,27 +3,16 @@ namespace App\Controller;
 
 use App\Entity\Merchant;
 use App\Entity\PurchaseToken;
-use App\Http\Request;
-use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * Class ApiController
- */
 class ApiController extends Controller
 {
-    /**
-     * @Route("/api/v1/token", name="api_token", methods={"POST"})
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function tokenAction(Request $request)
+    #[Route('/api/v1/token', name: 'api_token', methods: ['POST'])]
+    public function tokenAction(Request $request): JsonResponse
     {
-        $values = $request->json->all();
+        $values = $this->getJsonPayload($request);
         if (empty($values['transactionID'])
             || empty($values['price'])
             || empty($values['description'])
@@ -51,17 +40,10 @@ class ApiController extends Controller
         return new JsonResponse(['token' => $token->getToken()]);
     }
 
-    /**
-     * @Route("/api/v1/verify", name="api_verify", methods={"POST"})
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function verifyAction(Request $request)
+    #[Route('/api/v1/verify', name: 'api_verify', methods: ['POST'])]
+    public function verifyAction(Request $request): JsonResponse
     {
-        $values = $request->json->all();
+        $values = $this->getJsonPayload($request);
         if (empty($values['token'])
             || empty($values['code'])
             || empty($values['transactionID'])
@@ -89,10 +71,7 @@ class ApiController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     */
-    protected function verifyMerchant(Request $request)
+    protected function verifyMerchant(Request $request): void
     {
         $clientID     = $request->headers->get('X-Client-ID');
         $clientSecret = $request->headers->get('X-Client-Secret');
@@ -103,5 +82,15 @@ class ApiController extends Controller
         if (!$merchant || !password_verify($clientSecret, $merchant->getPassword())) {
             throw $this->createAccessDeniedException();
         }
+    }
+
+    protected function getJsonPayload(Request $request): array
+    {
+        $content = $request->getContent();
+        if (!$content) {
+            return [];
+        }
+        $decoded = json_decode($content, true);
+        return is_array($decoded) ? $decoded : [];
     }
 }
