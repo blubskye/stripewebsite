@@ -9,6 +9,8 @@
 
 A Stripe payment processor and webhook handler built with Symfony. Provides a secure bridge between merchants and Stripe's payment infrastructure.
 
+**Part of the NSFW Discord Directory ecosystem** - This payment gateway handles premium tier purchases for [nsfwdiscordme](https://github.com/blubskye/nsfwdiscordme). Both projects share the same MariaDB server.
+
 [Features](#features) • [Requirements](#requirements) • [Installation](#installation) • [API](#api-documentation) • [License](#license)
 
 </div>
@@ -220,6 +222,14 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 This project is licensed under the **GNU Affero General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
 
 [![AGPL v3](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0)
+
+## Related Projects
+
+| Project | Description |
+|---------|-------------|
+| [nsfwdiscordme](https://github.com/blubskye/nsfwdiscordme) | Discord server directory - uses this gateway for premium purchases |
+
+Both projects are designed to run together on the same server, sharing the same MariaDB instance with separate databases.
 
 ## Links
 
