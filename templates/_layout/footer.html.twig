@@ -1,8 +1,12 @@
 <footer class="footer">
   <div class="footer-copyright">
-    &copy; 2019 {{ siteName }}
+    &copy; {{ "now"|date("Y") }} {{ siteName }}
   </div>
   <div class="footer-links">
+    <a href="{{ path('source') }}">
+      Source
+    </a>
+    <span class="footer-divider">|</span>
     <a href="#">
       Contact Us
     </a>

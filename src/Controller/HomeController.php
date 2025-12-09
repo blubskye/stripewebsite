@@ -15,4 +15,12 @@ class HomeController extends Controller
     {
         return $this->render('home/index.html.twig');
     }
+
+    /**
+     * @Route("/source", name="source")
+     */
+    public function sourceAction()
+    {
+        return $this->render('home/source.html.twig');
+    }
 }

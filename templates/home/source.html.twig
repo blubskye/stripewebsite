@@ -1,0 +1,53 @@
+{% extends "base.html.twig" %}
+{% block title %}Source Code - {{ siteName }}{% endblock %}
+{% block body %}
+  <div class="source-page">
+    <div class="card">
+      <div class="card-header">
+        <h2><i class="fab fa-github"></i> Source Code</h2>
+      </div>
+      <div class="card-body">
+        <p class="lead">
+          This project is open source and licensed under the <strong>GNU Affero General Public License v3.0</strong>.
+        </p>
+        <p>
+          The AGPL-3.0 license ensures that any modifications to this software, including those used over a network,
+          must also be made available under the same license.
+        </p>
+        <hr>
+        <h4>Repository</h4>
+        <p>
+          View, fork, or contribute to the source code on GitHub:
+        </p>
+        <p>
+          <a href="https://github.com/blubskye/stripewebsite" target="_blank" rel="noopener noreferrer" class="btn btn-dark btn-lg">
+            <i class="fab fa-github"></i> View on GitHub
+          </a>
+        </p>
+        <hr>
+        <h4>Features</h4>
+        <ul>
+          <li>Secure Stripe Checkout integration</li>
+          <li>Token-based payment processing</li>
+          <li>REST API for merchants</li>
+          <li>Webhook notifications with retry logic</li>
+          <li>Multi-merchant support</li>
+        </ul>
+        <hr>
+        <h4>License Summary</h4>
+        <ul>
+          <li><strong>Freedom to use</strong> - Use the software for any purpose</li>
+          <li><strong>Freedom to study</strong> - Access and examine the source code</li>
+          <li><strong>Freedom to share</strong> - Redistribute copies</li>
+          <li><strong>Freedom to modify</strong> - Improve and share modifications</li>
+          <li><strong>Network use is distribution</strong> - If you modify and use over a network, you must share the source</li>
+        </ul>
+        <p>
+          <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">
+            Read the full AGPL-3.0 license
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

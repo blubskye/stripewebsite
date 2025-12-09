@@ -121,13 +121,13 @@ class PurchaseToken
         $this->dateCreated     = new DateTime();
         $this->isPurchased     = false;
         $this->isClientFailure = false;
-        $this->token           = md5(microtime(true) . mt_rand());
+        $this->token           = bin2hex(random_bytes(16));
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -193,9 +193,9 @@ class PurchaseToken
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -213,7 +213,7 @@ class PurchaseToken
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
     public function isSuccess(): ?bool
     {
@@ -353,7 +353,7 @@ class PurchaseToken
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getStripeID(): ?string
     {
@@ -373,7 +373,7 @@ class PurchaseToken
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getStripePaymentIntent(): ?string
     {
@@ -393,21 +393,21 @@ class PurchaseToken
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getStripCustomer(): ?string
+    public function getStripeCustomer(): ?string
     {
         return $this->stripCustomer;
     }
 
     /**
-     * @param string $stripCustomer
+     * @param string $stripeCustomer
      *
      * @return PurchaseToken
      */
-    public function setStripCustomer(string $stripCustomer): PurchaseToken
+    public function setStripeCustomer(string $stripeCustomer): PurchaseToken
     {
-        $this->stripCustomer = $stripCustomer;
+        $this->stripCustomer = $stripeCustomer;
 
         return $this;
     }
