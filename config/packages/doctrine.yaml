@@ -2,6 +2,19 @@ doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
         profiling_collect_backtrace: '%kernel.debug%'
+        # MariaDB-specific driver and settings
+        driver: 'pdo_mysql'
+        server_version: 'mariadb-10.6'
+        charset: utf8mb4
+        default_table_options:
+            charset: utf8mb4
+            collate: utf8mb4_unicode_ci
+            engine: InnoDB
+            row_format: DYNAMIC
+        options:
+            !php/const PDO::MYSQL_ATTR_INIT_COMMAND: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci, sql_mode='TRADITIONAL'"
+            # Enable persistent connections for better performance
+            !php/const PDO::ATTR_PERSISTENT: true
 
     orm:
         auto_generate_proxy_classes: true

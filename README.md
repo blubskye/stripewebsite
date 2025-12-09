@@ -29,7 +29,7 @@ A Stripe payment processor and webhook handler built with Symfony. Provides a se
 | Component | Technology |
 |-----------|------------|
 | Backend | PHP 8.2+, Symfony 6.4 LTS |
-| Database | MySQL with Doctrine ORM |
+| Database | MariaDB 10.6+ with Doctrine ORM |
 | Payments | Stripe PHP SDK |
 | HTTP Client | Guzzle |
 | Frontend | Bootstrap 4, Twig |
@@ -37,9 +37,9 @@ A Stripe payment processor and webhook handler built with Symfony. Provides a se
 ## Requirements
 
 - PHP 8.2 or higher
-- MySQL 5.7+
+- MariaDB 10.6+
 - Composer
-- Node.js & npm/yarn (for building assets)
+- Node.js & npm (for building assets)
 - Stripe Account with API keys
 
 ## Installation
@@ -74,7 +74,7 @@ Create a `.env.local` file with:
 APP_ENV=prod
 APP_SECRET=your_random_secret_here
 
-DATABASE_URL="mysql://user:password@localhost:3306/stripewebsite"
+DATABASE_URL="mysql://user:password@localhost:3306/stripewebsite?serverVersion=mariadb-10.6"
 
 STRIPE_SECRET_KEY=sk_live_your_stripe_secret_key
 STRIPE_PUBLIC_KEY=pk_live_your_stripe_public_key
