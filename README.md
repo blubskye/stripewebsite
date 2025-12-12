@@ -3,8 +3,8 @@
 # Stripe Payment Gateway
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-777BB4.svg)](https://php.net)
-[![Symfony](https://img.shields.io/badge/Symfony-6.4%20LTS-000000.svg)](https://symfony.com)
+[![PHP Version](https://img.shields.io/badge/PHP-8.5%2B-777BB4.svg)](https://php.net)
+[![Symfony](https://img.shields.io/badge/Symfony-8.0-000000.svg)](https://symfony.com)
 [![Stripe](https://img.shields.io/badge/Stripe-API-635BFF.svg)](https://stripe.com)
 
 A Stripe payment processor and webhook handler built with Symfony. Provides a secure bridge between merchants and Stripe's payment infrastructure.
@@ -30,7 +30,7 @@ A Stripe payment processor and webhook handler built with Symfony. Provides a se
 
 | Component | Technology |
 |-----------|------------|
-| Backend | PHP 8.2+, Symfony 6.4 LTS |
+| Backend | PHP 8.5+, Symfony 8.0 |
 | Database | MariaDB 10.6+ with Doctrine ORM |
 | Payments | Stripe PHP SDK |
 | HTTP Client | Guzzle |
@@ -38,9 +38,9 @@ A Stripe payment processor and webhook handler built with Symfony. Provides a se
 
 ## Requirements
 
-- PHP 8.2 or higher
+- PHP 8.5 or higher
 - MariaDB 10.6+
-- Composer
+- Composer 2.x
 - Node.js & npm (for building assets)
 - Stripe Account with API keys
 
