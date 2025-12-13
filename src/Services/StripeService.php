@@ -8,13 +8,10 @@ use Stripe\Stripe;
 
 class StripeService
 {
-    protected string $apiKey;
-    protected string $secretKey;
-
-    public function __construct(string $apiKey, string $secretKey)
-    {
-        $this->apiKey    = $apiKey;
-        $this->secretKey = $secretKey;
+    public function __construct(
+        protected string $apiKey,
+        protected string $secretKey
+    ) {
         Stripe::setApiKey($secretKey);
     }
 

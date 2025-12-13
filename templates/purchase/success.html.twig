@@ -1,0 +1,18 @@
+{% extends "base.html.twig" %}
+{% block body %}
+  <div class="row">
+    <div class="col col-md-8 offset-md-2 col-sm-12 col-12">
+      <div class="card card-purchase">
+        <div class="card-body text-center">
+          <img src="{{ asset('images/logo_transparent.png') }}" alt="Logo" class="nav-image" />
+          <div class="mt-4">
+            <i class="fas fa-check-circle text-success fa-4x mb-3"></i>
+            <h3 class="text-success">Payment Successful!</h3>
+            <p class="text-muted">{{ message }}</p>
+            <p class="text-muted">You may now close this window.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
