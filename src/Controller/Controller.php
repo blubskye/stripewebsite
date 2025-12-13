@@ -7,26 +7,16 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * Class Controller
+ * Base controller with common dependencies.
  */
 class Controller extends AbstractController
 {
     use LoggerAwareTrait;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
-
-    /**
-     * Constructor
-     *
-     * @param EntityManagerInterface $em
-     * @param LoggerInterface        $logger
-     */
-    public function __construct(EntityManagerInterface $em, LoggerInterface $logger)
-    {
-        $this->em = $em;
+    public function __construct(
+        protected EntityManagerInterface $em,
+        LoggerInterface $logger
+    ) {
         $this->setLogger($logger);
     }
 }

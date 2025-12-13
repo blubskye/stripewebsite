@@ -14,6 +14,8 @@
             </div>
           </div>
           <form method="post" action="{{ action }}">
+            {# Security: CSRF token to prevent cross-site request forgery (CWE-352) #}
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
             <img src="{{ asset('images/stripe-logo.png') }}" alt="Stripe Logo" class="stripe-logo" />
             <button type="submit" class="btn btn-success btn-block">
               Checkout with Stripe

@@ -190,6 +190,9 @@ stripewebsite/
 │   ├── Entity/
 │   │   ├── PurchaseToken.php      # Payment token entity
 │   │   └── Merchant.php           # Merchant entity
+│   ├── Security/
+│   │   ├── RateLimiter.php        # Request rate limiting
+│   │   └── UrlValidator.php       # URL validation (SSRF/redirect)
 │   ├── Services/
 │   │   ├── StripeService.php      # Stripe API wrapper
 │   │   └── WebhookService.php     # Outbound webhooks
@@ -202,10 +205,37 @@ stripewebsite/
 
 ## Security
 
+This application implements multiple layers of security to protect against common web vulnerabilities:
+
+### Authentication & Authorization
 - **Cryptographically Secure Tokens** - Uses `random_bytes()` for token generation
-- **Password Hashing** - Merchant secrets are hashed with `password_hash()`
-- **Parameterized Queries** - All database queries use Doctrine ORM
+- **Password Hashing** - Merchant secrets are hashed with `password_hash()` (bcrypt)
+- **Timing-Attack Protection** - Constant-time comparison using `hash_equals()` and dummy hash verification to prevent authentication timing attacks (CWE-208)
+
+### Input Validation
+- **Price Validation** - Enforces minimum ($0.50) and maximum ($10,000) price bounds to prevent manipulation (CWE-20)
+- **URL Validation** - Validates redirect and webhook URLs against allowlists and blocks private/internal addresses
+- **Parameterized Queries** - All database queries use Doctrine ORM to prevent SQL injection (CWE-89)
+
+### Request Forgery Protection
+- **CSRF Protection** - Payment forms include CSRF tokens validated server-side (CWE-352)
+- **Open Redirect Prevention** - Redirect URLs validated against allowed domains (CWE-601)
+- **SSRF Protection** - Webhook URLs validated to block internal networks, localhost, and cloud metadata endpoints (CWE-918)
+
+### Rate Limiting
+- **API Rate Limiting** - Token creation limited to 100 requests/hour per IP (CWE-799)
+- **Authentication Rate Limiting** - Login attempts limited to 10 requests/minute per IP
+- **Verification Rate Limiting** - Token verification limited to prevent enumeration attacks
+
+### Infrastructure
 - **HTTPS Required** - All production deployments should use HTTPS
+- **Secure Headers** - Configure your web server with appropriate security headers
+
+### Security Classes
+| Class | Purpose |
+|-------|---------|
+| `UrlValidator` | Validates redirect/webhook URLs against SSRF and open redirect attacks |
+| `RateLimiter` | Provides request rate limiting to prevent abuse |
 
 ## Contributing
 
