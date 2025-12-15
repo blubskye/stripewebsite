@@ -9,6 +9,9 @@ use Exception;
 #[ORM\Entity(repositoryClass: PurchaseTokenRepository::class)]
 #[ORM\Table(name: 'purchase_token')]
 #[ORM\Index(columns: ['token'], name: 'idx_token')]
+#[ORM\Index(columns: ['isClientFailure'], name: 'idx_client_failure')]
+#[ORM\Index(columns: ['dateCreated'], name: 'idx_date_created')]
+#[ORM\Index(columns: ['stripeID'], name: 'idx_stripe_id')]
 class PurchaseToken
 {
     #[ORM\Id]

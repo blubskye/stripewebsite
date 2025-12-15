@@ -18,3 +18,4 @@ services:
         arguments:
             $apiKey: '%env(STRIPE_API_KEY)%'
             $secretKey: '%env(STRIPE_SECRET_KEY)%'
+            $cache: '@stripe.cache'

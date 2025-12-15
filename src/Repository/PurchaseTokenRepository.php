@@ -1,14 +1,19 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\PurchaseToken;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<PurchaseToken>
+ */
 class PurchaseTokenRepository extends ServiceEntityRepository
 {
-    const TOKEN_EXPIRATION = 43200; // 12 hours
+    private const TOKEN_EXPIRATION = 43200; // 12 hours
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -22,22 +27,20 @@ class PurchaseTokenRepository extends ServiceEntityRepository
 
     public function findByToken(string $token): ?PurchaseToken
     {
-        $purchaseToken = $this->findOneBy(['token' => $token]);
-        if (!$purchaseToken) {
-            return null;
-        }
+        // Use DQL with expiration check in database for efficiency
+        $expirationTime = new DateTimeImmutable(sprintf('-%d seconds', self::TOKEN_EXPIRATION));
 
-        $now  = new DateTime();
-        $diff = $now->getTimestamp() - $purchaseToken->getDateCreated()->getTimestamp();
-        if ($diff > self::TOKEN_EXPIRATION) {
-            return null;
-        }
-
-        return $purchaseToken;
+        return $this->createQueryBuilder('pt')
+            ->where('pt.token = :token')
+            ->andWhere('pt.dateCreated > :expiration')
+            ->setParameter('token', $token)
+            ->setParameter('expiration', $expirationTime)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
-     * @return PurchaseToken[]
+     * @return array<PurchaseToken>
      */
     public function findByClientFailure(): array
     {

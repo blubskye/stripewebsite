@@ -237,6 +237,87 @@ This application implements multiple layers of security to protect against commo
 | `UrlValidator` | Validates redirect/webhook URLs against SSRF and open redirect attacks |
 | `RateLimiter` | Provides request rate limiting to prevent abuse |
 
+## Performance Optimizations
+
+This project includes several performance optimizations for production environments.
+
+### Webpack Production Build
+
+Assets are automatically optimized in production mode:
+
+```bash
+# Development build
+npm run dev
+
+# Production build (minified, no source maps, content hashing)
+NODE_ENV=production npm run build
+```
+
+Production builds include:
+- JavaScript minification via TerserPlugin (console.log stripped)
+- CSS minification via CssMinimizerPlugin
+- Content hashing for cache busting
+- No source maps in production
+
+### Redis Caching
+
+Configure Redis for session storage and application caching:
+
+```env
+# .env.local
+REDIS_URL=redis://localhost:6379
+SESSION_HANDLER=redis://localhost:6379
+```
+
+Features:
+- **Session Storage** - Redis-backed sessions for scalability
+- **Stripe API Caching** - 5-minute TTL cache for session lookups to reduce API calls
+
+### Database Optimizations
+
+The following indexes are configured for query performance:
+
+| Table | Index | Purpose |
+|-------|-------|---------|
+| `purchase_token` | `idx_token` | Token lookups |
+| `purchase_token` | `idx_client_failure` | Failed webhook queries |
+| `purchase_token` | `idx_date_created` | Expiration checks |
+| `purchase_token` | `idx_stripe_id` | Stripe reconciliation |
+
+After updating, run migrations:
+```bash
+bin/console doctrine:migrations:diff
+bin/console doctrine:migrations:migrate
+```
+
+### Batch Processing
+
+The `app:payments:process-client-failures` command uses batch flushing (50 records at a time) to reduce database overhead when retrying failed webhooks.
+
+### PHP OPcache & JIT
+
+For optimal performance, configure PHP OPcache in production:
+
+```ini
+; php.ini
+opcache.enable=1
+opcache.memory_consumption=256
+opcache.max_accelerated_files=20000
+opcache.validate_timestamps=0
+
+; PHP 8.4+ JIT
+opcache.jit=tracing
+opcache.jit_buffer_size=100M
+```
+
+### NPM Dependencies for Optimization
+
+Install the required optimization packages:
+
+```bash
+npm install --save-dev terser-webpack-plugin css-minimizer-webpack-plugin
+```
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
