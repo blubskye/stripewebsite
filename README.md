@@ -44,7 +44,7 @@ A Stripe payment processor and webhook handler built with Symfony. Provides a se
 - PHP 8.5 or higher
 - MariaDB 10.6+
 - Redis 8.4+ (for async I/O threading)
-- Composer 2.x
+- Composer 2.9.2+ (for security blocking)
 - Node.js 24+ with npm 11+
 - Stripe Account with API keys
 
@@ -345,6 +345,35 @@ Install the required optimization packages:
 npm install --save-dev terser-webpack-plugin css-minimizer-webpack-plugin lightningcss
 ```
 
+### Composer 2.9.2+ Optimizations
+
+The project uses Composer 2.9.2+ with security and performance enhancements:
+
+```bash
+# Update Composer to 2.9.2+
+composer self-update
+
+# Run security audit
+composer audit
+
+# Update with minimal changes (safer)
+composer update --minimal-changes
+
+# Update with patch-only restrictions
+composer update --patch-only
+```
+
+**Security Features (Composer 2.9+):**
+- `audit.block-insecure: true` - Blocks updates to vulnerable packages
+- `audit.abandoned: report` - Reports abandoned packages
+- Automatic security advisory checking during updates
+
+**Performance Optimizations:**
+- `optimize-autoloader: true` - Generates optimized class maps
+- `classmap-authoritative: true` - Only loads from classmap (no filesystem checks)
+- `apcu-autoloader: true` - Uses APCu for autoloader caching
+- `platform-check: true` - Validates PHP version and extensions
+
 ### Infrastructure Summary
 
 | Component | Version | Key Feature |
@@ -352,6 +381,7 @@ npm install --save-dev terser-webpack-plugin css-minimizer-webpack-plugin lightn
 | Node.js | 24+ | V8 13.6 with 15-30% perf gains |
 | Redis | 8.4+ | Async I/O threads (37-112% throughput) |
 | PHP | 8.5+ | JIT compilation |
+| Composer | 2.9.2+ | Security blocking, optimized autoloader |
 | Webpack | 5.97+ | Parallel processing |
 
 ## Contributing
