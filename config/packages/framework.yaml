@@ -5,6 +5,8 @@ framework:
         handler_id: '%env(default::SESSION_HANDLER)%'
         cookie_secure: auto
         cookie_samesite: lax
+        cookie_lifetime: 604800
+        gc_maxlifetime: 604800
         storage_factory_id: session.storage.factory.native
 
     php_errors:
@@ -12,10 +14,18 @@ framework:
 
     handle_all_throwables: true
 
+    # Redis 8.4+ cache configuration
+    # Enable io-threads on Redis server for async I/O performance
     cache:
         app: cache.adapter.redis
-        default_redis_provider: '%env(REDIS_URL)%'
+        # Use persistent connections for better performance with Redis 8's async I/O
+        default_redis_provider: '%env(REDIS_URL)%?persistent=1&timeout=2'
         pools:
+            # Stripe API response cache
             stripe.cache:
                 adapter: cache.adapter.redis
                 default_lifetime: 300
+            # Rate limiting cache
+            rate_limit.cache:
+                adapter: cache.adapter.redis
+                default_lifetime: 3600
