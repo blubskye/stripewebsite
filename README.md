@@ -396,7 +396,43 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the **GNU Affero General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+
+### What This Means For You
+
+The AGPL-3.0 is a **copyleft license** that ensures this software remains free and open. Here's what you need to know:
+
+#### ✅ You CAN:
+- **Use** this software for any purpose (personal, commercial, whatever)
+- **Modify** the code to your heart's content
+- **Distribute** copies to others
+- **Run** it as a network service
+
+#### 📋 You MUST:
+- **Keep it open source** - If you modify and distribute this code, your version must also be AGPL-3.0
+- **Provide source access** - Users of your service must be able to get the source code
+- **State changes** - Document what you've modified from the original
+- **Include license** - Keep the LICENSE file and copyright notices intact
+
+#### 🌐 The Network Clause (This is the important part!):
+Unlike regular GPL, **AGPL has a network provision**. This means:
+- If you run a **modified version** of this software as a public web service
+- You **MUST** make your complete source code available to users
+
+#### ❌ You CANNOT:
+- 🚫 Make it closed source
+- 🚫 Remove the license or copyright notices
+- 🚫 Use a different license for modified versions
+- 🚫 Hide your modifications if you run it as a public service
+
+#### 💡 In Simple Terms:
+> If you use this code to create something, you must share it with everyone too. That's only fair, right?
+
+This ensures that improvements benefit the entire community, not just one person.
+
+See the [LICENSE](LICENSE) file for the full legal text.
+
+**Source Code:** https://github.com/blubskye/stripewebsite
 
 [![AGPL v3](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0)
 
