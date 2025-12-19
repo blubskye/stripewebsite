@@ -1,48 +1,49 @@
 {
   "name": "stripewebsite",
   "version": "1.0.0",
-  "description": "",
+  "description": "Stripe Payment Gateway",
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -p",
-    "watch": "webpack --watch"
+    "build": "NODE_ENV=production node --max-old-space-size=2048 node_modules/.bin/webpack --mode=production",
+    "dev": "webpack --mode=development",
+    "watch": "webpack --mode=development --watch",
+    "lint": "eslint assets/js/**/*.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/blubaustin/stripewebsite"
+    "url": "git+https://github.com/blubskye/stripewebsite"
   },
   "author": "",
-  "license": "ISC",
+  "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/blubaustin/stripewebsite/issues"
+    "url": "https://github.com/blubskye/stripewebsite/issues"
   },
-  "homepage": "https://github.com/blubaustin/stripewebsite",
+  "homepage": "https://github.com/blubskye/stripewebsite",
   "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/plugin-proposal-class-properties": "^7.4.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/preset-env": "^7.4.3",
-    "babel-eslint": "^10.0.1",
-    "babel-loader": "^8.0.5",
-    "babel-plugin-module-resolver": "^3.2.0",
-    "css-loader": "^2.1.1",
-    "eslint": "^5.16.0",
-    "eslint-import-resolver-babel-module": "^5.0.1",
-    "eslint-plugin-import": "^2.17.2",
-    "file-loader": "^3.0.1",
-    "iframe-resizer": "^4.1.1",
-    "mini-css-extract-plugin": "^0.6.0",
-    "node-sass": "^4.11.0",
-    "sass-loader": "^7.1.0",
-    "style-loader": "^0.23.1",
-    "webpack": "^4.30.0",
-    "webpack-cli": "^3.3.0"
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "babel-loader": "^9.2.1",
+    "css-loader": "^7.1.2",
+    "css-minimizer-webpack-plugin": "^7.0.0",
+    "eslint": "^9.17.0",
+    "lightningcss": "^1.28.2",
+    "mini-css-extract-plugin": "^2.9.2",
+    "sass": "^1.83.0",
+    "sass-loader": "^16.0.4",
+    "terser-webpack-plugin": "^5.3.11",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "bootstrap": "^4.3.1",
-    "cropperjs": "^1.5.1",
-    "jsonp-es6": "^1.0.0",
-    "lodash.isequal": "^4.5.0",
-    "promise-polyfill": "^8.1.0"
+    "bootstrap": "^5.3.3",
+    "cropperjs": "^1.6.2",
+    "lodash.isequal": "^4.5.0"
+  },
+  "overrides": {
+    "glob": "^11.0.0",
+    "rimraf": "^6.0.0"
   }
 }

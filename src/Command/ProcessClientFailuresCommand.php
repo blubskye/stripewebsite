@@ -23,13 +23,28 @@ class ProcessClientFailuresCommand extends Command
         parent::__construct();
     }
 
+    private const BATCH_SIZE = 50;
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $paymentTokens = $this->em->getRepository(PurchaseToken::class)->findByClientFailure();
+        $processed = 0;
+
         foreach ($paymentTokens as $purchaseToken) {
             $this->process($purchaseToken, $output);
+            $processed++;
+
+            // Batch flush every BATCH_SIZE records for efficiency
+            if ($processed % self::BATCH_SIZE === 0) {
+                $this->em->flush();
+                $this->em->clear(PurchaseToken::class);
+            }
         }
 
+        // Final flush for remaining records
+        $this->em->flush();
+
+        $output->writeln(sprintf('Processed %d failed webhooks.', $processed));
         return Command::SUCCESS;
     }
 
@@ -40,7 +55,6 @@ class ProcessClientFailuresCommand extends Command
         try {
             $this->webhookService->send($purchaseToken, true);
             $purchaseToken->setIsClientFailure(false);
-            $this->em->flush();
         } catch (Exception $e) {
             $output->writeln('Error: ' . $e->getMessage());
         }

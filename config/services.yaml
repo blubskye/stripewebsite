@@ -14,7 +14,15 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # Stripe service with Redis cache for API responses
     App\Services\StripeService:
         arguments:
             $apiKey: '%env(STRIPE_API_KEY)%'
             $secretKey: '%env(STRIPE_SECRET_KEY)%'
+            $cache: '@stripe.cache'
+
+    # Rate limiter using dedicated cache pool
+    # Benefits from Redis 8.4's async I/O and pipelining
+    App\Security\RateLimiter:
+        arguments:
+            $cache: '@rate_limit.cache'

@@ -5,6 +5,8 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![PHP Version](https://img.shields.io/badge/PHP-8.5%2B-777BB4.svg)](https://php.net)
 [![Symfony](https://img.shields.io/badge/Symfony-8.0-000000.svg)](https://symfony.com)
+[![Node.js](https://img.shields.io/badge/Node.js-24%2B-339933.svg)](https://nodejs.org)
+[![Redis](https://img.shields.io/badge/Redis-8.4%2B-DC382D.svg)](https://redis.io)
 [![Stripe](https://img.shields.io/badge/Stripe-API-635BFF.svg)](https://stripe.com)
 
 A Stripe payment processor and webhook handler built with Symfony. Provides a secure bridge between merchants and Stripe's payment infrastructure.
@@ -32,16 +34,18 @@ A Stripe payment processor and webhook handler built with Symfony. Provides a se
 |-----------|------------|
 | Backend | PHP 8.5+, Symfony 8.0 |
 | Database | MariaDB 10.6+ with Doctrine ORM |
+| Cache | Redis 8.4+ (async I/O) |
 | Payments | Stripe PHP SDK |
 | HTTP Client | Guzzle |
-| Frontend | Bootstrap 4, Twig |
+| Frontend | Node.js 24+, Webpack 5, Bootstrap 5, Twig |
 
 ## Requirements
 
 - PHP 8.5 or higher
 - MariaDB 10.6+
-- Composer 2.x
-- Node.js & npm (for building assets)
+- Redis 8.4+ (for async I/O threading)
+- Composer 2.9.2+ (for security blocking)
+- Node.js 24+ with npm 11+
 - Stripe Account with API keys
 
 ## Installation
@@ -237,6 +241,149 @@ This application implements multiple layers of security to protect against commo
 | `UrlValidator` | Validates redirect/webhook URLs against SSRF and open redirect attacks |
 | `RateLimiter` | Provides request rate limiting to prevent abuse |
 
+## Performance Optimizations
+
+This project includes several performance optimizations for production environments.
+
+### Node.js 24 & Webpack Optimizations
+
+The build system requires Node.js 24+ for optimal performance:
+
+```bash
+# Check Node.js version
+node --version  # Should be v24.x.x
+
+# Development build
+npm run dev
+
+# Production build (minified, no source maps, content hashing)
+NODE_ENV=production npm run build
+```
+
+**Node.js 24 Features Used:**
+- V8 13.6 engine with 15-30% performance improvements
+- Enhanced async/await performance
+- npm 11 with faster dependency resolution
+
+**Webpack Build Optimizations:**
+- Parallel minification using all CPU cores
+- LightningCSS for faster CSS minification
+- Filesystem caching for faster rebuilds
+- ECMAScript 2024 output targeting modern browsers
+- Tree shaking with `usedExports` and `sideEffects`
+- Content hashing for cache busting
+
+### Redis 8.4+ with Async I/O
+
+Configure Redis 8.4+ for session storage and application caching:
+
+```env
+# .env.local
+REDIS_URL=redis://localhost:6379
+SESSION_HANDLER=redis://localhost:6379
+```
+
+**Redis Server Configuration** (`config/redis/redis-8.4.conf`):
+```ini
+# Enable async I/O threads (set to CPU core count, max 8)
+io-threads 8
+io-threads-do-reads yes
+```
+
+**Performance Improvements:**
+- 37-112% throughput improvement with async I/O threads
+- Persistent connections reduce connection overhead
+- xxHash (xxh3) for faster key hashing in rate limiter
+
+**Cache Pools:**
+- **Session Storage** - Redis-backed sessions for scalability
+- **Stripe API Caching** - 5-minute TTL cache for session lookups
+- **Rate Limiting Cache** - 1-hour TTL for rate limit counters
+
+### Database Optimizations
+
+The following indexes are configured for query performance:
+
+| Table | Index | Purpose |
+|-------|-------|---------|
+| `purchase_token` | `idx_token` | Token lookups |
+| `purchase_token` | `idx_client_failure` | Failed webhook queries |
+| `purchase_token` | `idx_date_created` | Expiration checks |
+| `purchase_token` | `idx_stripe_id` | Stripe reconciliation |
+
+After updating, run migrations:
+```bash
+bin/console doctrine:migrations:diff
+bin/console doctrine:migrations:migrate
+```
+
+### Batch Processing
+
+The `app:payments:process-client-failures` command uses batch flushing (50 records at a time) to reduce database overhead when retrying failed webhooks.
+
+### PHP OPcache & JIT
+
+For optimal performance, configure PHP OPcache in production:
+
+```ini
+; php.ini
+opcache.enable=1
+opcache.memory_consumption=256
+opcache.max_accelerated_files=20000
+opcache.validate_timestamps=0
+
+; PHP 8.4+ JIT
+opcache.jit=tracing
+opcache.jit_buffer_size=100M
+```
+
+### NPM Dependencies for Optimization
+
+Install the required optimization packages:
+
+```bash
+npm install --save-dev terser-webpack-plugin css-minimizer-webpack-plugin lightningcss
+```
+
+### Composer 2.9.2+ Optimizations
+
+The project uses Composer 2.9.2+ with security and performance enhancements:
+
+```bash
+# Update Composer to 2.9.2+
+composer self-update
+
+# Run security audit
+composer audit
+
+# Update with minimal changes (safer)
+composer update --minimal-changes
+
+# Update with patch-only restrictions
+composer update --patch-only
+```
+
+**Security Features (Composer 2.9+):**
+- `audit.block-insecure: true` - Blocks updates to vulnerable packages
+- `audit.abandoned: report` - Reports abandoned packages
+- Automatic security advisory checking during updates
+
+**Performance Optimizations:**
+- `optimize-autoloader: true` - Generates optimized class maps
+- `classmap-authoritative: true` - Only loads from classmap (no filesystem checks)
+- `apcu-autoloader: true` - Uses APCu for autoloader caching
+- `platform-check: true` - Validates PHP version and extensions
+
+### Infrastructure Summary
+
+| Component | Version | Key Feature |
+|-----------|---------|-------------|
+| Node.js | 24+ | V8 13.6 with 15-30% perf gains |
+| Redis | 8.4+ | Async I/O threads (37-112% throughput) |
+| PHP | 8.5+ | JIT compilation |
+| Composer | 2.9.2+ | Security blocking, optimized autoloader |
+| Webpack | 5.97+ | Parallel processing |
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -249,7 +396,44 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the **GNU Affero General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+
+### What This Means For You
+
+The AGPL-3.0 is a **copyleft license** that ensures this software remains free and open. Here's what you need to know:
+
+#### ✅ You CAN:
+- **Use** this software for any purpose (personal, commercial, whatever)
+- **Modify** the code to your heart's content
+- **Distribute** copies to others
+- **Run** it as a network service
+
+#### 📋 You MUST:
+- **Keep it open source** - ANY modifications you make must be released under AGPL-3.0
+- **Publish your source code** - Your modified source code must be made publicly available
+- **State changes** - Document what you've modified from the original
+- **Include license** - Keep the LICENSE file and copyright notices intact
+
+#### 🌐 The Network Clause (This is the important part!):
+Unlike regular GPL, **AGPL has a network provision**. This means:
+- If you modify this code **at all**, you must make your source public
+- Running a modified version as a network service (like a web app) requires source disclosure
+- This applies whether you "distribute" the code or not - network use counts!
+
+#### ❌ You CANNOT:
+- 🚫 Make it closed source or keep modifications private
+- 🚫 Remove the license or copyright notices
+- 🚫 Use a different license for modified versions
+- 🚫 Run modified code without publishing your source
+
+#### 💡 In Simple Terms:
+> If you use this code to create something, you must share it with everyone too. That's only fair, right?
+
+This ensures that improvements benefit the entire community, not just one person.
+
+See the [LICENSE](LICENSE) file for the full legal text.
+
+**Source Code:** https://github.com/blubskye/stripewebsite
 
 [![AGPL v3](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0)
 
